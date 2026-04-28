@@ -176,8 +176,10 @@ export default function MemberDetail() {
                   referrerPolicy="no-referrer"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
-                    target.onerror = null;
-                    target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}&background=f1f5f9&color=0f172a`;
+                    if (!target.src.includes('ui-avatars.com')) {
+                      target.onerror = null;
+                      target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}&background=f1f5f9&color=0f172a`;
+                    }
                   }}
                 />
               </div>

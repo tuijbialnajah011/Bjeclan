@@ -35,13 +35,35 @@ const INITIAL_MEMBERS: Member[] = [
     grade: 'Co.Founder'
   },
   {
+    id: 'natsuki-1',
+    name: '𝙱𝙹𝙴 ~ Natsuki',
+    age: 0,
+    qualifications: [],
+    achievements: [],
+    bio: 'Grade C member.',
+    profileImage: '',
+    joinedDate: new Date().toISOString().split('T')[0],
+    grade: 'C'
+  },
+  {
     id: 'rudy-1',
     name: '𝙱𝙹𝙴 ~ Rudy',
     age: 20,
     qualifications: [],
     achievements: [],
     bio: 'Grade D member.',
-    profileImage: '/api/proxy-image?url=https://files.catbox.moe/w6ws8n.jpg',
+    profileImage: 'https://files.catbox.moe/w6ws8n.jpg',
+    joinedDate: new Date().toISOString().split('T')[0],
+    grade: 'D'
+  },
+  {
+    id: 'levi-1',
+    name: '𝙱𝙹𝙴 ~ Levi',
+    age: 0,
+    qualifications: [],
+    achievements: [],
+    bio: 'Grade D member.',
+    profileImage: '',
     joinedDate: new Date().toISOString().split('T')[0],
     grade: 'D'
   },
@@ -69,7 +91,7 @@ const INITIAL_MEMBERS: Member[] = [
   },
   {
     id: 'raven-1',
-    name: 'Raven',
+    name: 'Raven♰ᵏᵃʳᵃˢᵘ',
     age: 0,
     qualifications: [],
     achievements: [],
@@ -82,12 +104,12 @@ const INITIAL_MEMBERS: Member[] = [
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [members, setMembers] = useState<Member[]>(() => {
-    const saved = localStorage.getItem('bje_members_v8');
+    const saved = localStorage.getItem('bje_members_v15');
     return saved ? JSON.parse(saved) : INITIAL_MEMBERS;
   });
 
   useEffect(() => {
-    localStorage.setItem('bje_members_v8', JSON.stringify(members));
+    localStorage.setItem('bje_members_v15', JSON.stringify(members));
   }, [members]);
 
   const addMember = (memberData: Omit<Member, 'id'>) => {
