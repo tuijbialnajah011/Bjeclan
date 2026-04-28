@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Shield, Crown, Star, ArrowRight, Send } from 'lucide-react';
@@ -8,6 +8,44 @@ export default function Home() {
   const { members } = useAppContext();
   const [waName, setWaName] = useState('');
   const [intro, setIntro] = useState('');
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    let isScrolling = true;
+
+    const interval = setInterval(() => {
+      if (!isScrolling || !container) return;
+      
+      const { scrollLeft, scrollWidth, clientWidth } = container;
+      // Use a tolerance for floating point scroll values
+      if (Math.ceil(scrollLeft + clientWidth) >= scrollWidth - 10) {
+        container.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        // Scroll by an amount that will trigger the next snap point
+        // On mobile it's 85vw (~300px), desktop 350-400px.
+        container.scrollBy({ left: 350, behavior: 'smooth' });
+      }
+    }, 2500);
+
+    const pause = () => { isScrolling = false; };
+    const resume = () => { isScrolling = true; };
+
+    container.addEventListener('mouseenter', pause);
+    container.addEventListener('mouseleave', resume);
+    container.addEventListener('touchstart', pause, { passive: true });
+    container.addEventListener('touchend', resume);
+
+    return () => {
+      clearInterval(interval);
+      container.removeEventListener('mouseenter', pause);
+      container.removeEventListener('mouseleave', resume);
+      container.removeEventListener('touchstart', pause);
+      container.removeEventListener('touchend', resume);
+    };
+  }, []);
 
   const handleJoinSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,24 +90,14 @@ export default function Home() {
       <main className="flex-grow flex flex-col px-6 md:px-12 lg:px-24 pt-32 pb-32">
         {/* --- Hero Section --- */}
         <div className="max-w-[1400px] w-full mx-auto mb-24">
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="text-[14vw] sm:text-[10vw] lg:text-[120px] font-black tracking-tighter text-slate-900 dark:text-white leading-[0.85] uppercase"
-          >
-            Power <br/>
-            <span className="text-blue-600 tracking-tighter">System</span>
-          </motion.h1>
-
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.3, duration: 1 }}
-            className="mt-12 flex flex-col md:flex-row justify-between items-start md:items-end border-t border-slate-300 dark:border-slate-800 pt-8"
+            transition={{ delay: 0.1, duration: 1 }}
+            className="flex flex-col md:flex-row justify-between items-start md:items-end pt-8"
           >
             <p className="max-w-md text-lg text-slate-600 dark:text-slate-400 font-medium leading-relaxed mb-8 md:mb-0">
-              We accept failures, but stagnation cannot be tolerated. This clan is built for learning, evolution, and disciplined thinking.
+              We are not merely a gathering of enthusiasts. We are an alliance — a brotherhood and sisterhood united under the banner of 𝙱𝙹𝙴 ~ Clan
             </p>
 
             <Link
@@ -84,76 +112,88 @@ export default function Home() {
           </motion.div>
         </div>
 
-        {/* --- Bento Grid --- */}
+        {/* --- Scrollable Tiers --- */}
         <motion.div
           variants={container}
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, margin: "-10%" }}
-          className="max-w-[1400px] w-full mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          className="max-w-[1400px] w-full mx-auto"
         >
-          {/* Leadership Block */}
-          <motion.div variants={item} className="p-8 rounded-[32px] bg-slate-900 text-white min-h-[300px] flex flex-col justify-between relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-8 text-slate-800 group-hover:text-slate-700 transition-colors pointer-events-none">
-              <Shield className="w-48 h-48 -rotate-12 translate-x-10 -translate-y-10" />
-            </div>
-            
-            <div className="relative z-10">
-              <h3 className="text-[10px] uppercase tracking-[0.3em] font-bold text-slate-500 mb-8">Leadership</h3>
-              <div className="space-y-8">
-                <div>
-                  <div className="flex items-center gap-2 text-slate-400 mb-2">
-                    <Crown className="w-4 h-4" />
-                    <span className="text-xs uppercase tracking-wider font-semibold">Founder</span>
-                  </div>
-                  <div className="text-2xl lg:text-3xl font-bold tracking-tight">{founders.find(m => m.grade === 'Founder')?.name || 'Tuijbialnajah'}</div>
-                </div>
-                <div>
-                  <div className="flex items-center gap-2 text-slate-400 mb-2">
-                    <Star className="w-4 h-4" />
-                    <span className="text-xs uppercase tracking-wider font-semibold">Co-Founder</span>
-                  </div>
-                  <div className="text-2xl lg:text-3xl font-bold tracking-tight">{founders.find(m => m.grade === 'Co.Founder')?.name || '𝙱𝙹𝙴 ~ Vegeta'}</div>
-                </div>
-              </div>
-            </div>
-            <div className="mt-12 text-xs text-slate-600 font-mono tracking-widest relative z-10">
-              EST. 2026 // BJE
-            </div>
-          </motion.div>
-
-          {/* Grade Tiers */}
-          {gridData.map((tier) => (
-            <motion.div variants={item} key={tier.grade} className="p-8 rounded-[32px] bg-white dark:bg-slate-900 flex flex-col min-h-[300px] border border-slate-200/50 dark:border-slate-800 shadow-sm relative overflow-hidden group">
-              <div className="absolute -right-6 -bottom-10 text-[180px] font-black opacity-[0.03] dark:opacity-[0.05] pointer-events-none font-serif select-none leading-none group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-700">
-                {tier.grade}
+          {/* Scrollable Container */}
+          <div 
+            ref={scrollContainerRef}
+            className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']"
+          >
+            {/* Leadership Block */}
+            <motion.div variants={item} className="snap-center sm:snap-start shrink-0 w-[85vw] md:w-[400px] p-8 rounded-[32px] bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-slate-800 via-slate-900 to-black text-white min-h-[300px] flex flex-col justify-between relative overflow-hidden group shadow-2xl shadow-blue-900/20 ring-1 ring-white/10 hover:-translate-y-1 hover:shadow-blue-900/40 transition-all duration-300">
+              <div className="absolute top-0 right-0 p-8 text-slate-800/50 group-hover:text-slate-700/80 transition-colors pointer-events-none blur-[2px] group-hover:blur-none duration-500">
+                <Shield className="w-48 h-48 -rotate-12 translate-x-10 -translate-y-10" />
               </div>
               
-              <h3 className="text-[10px] uppercase tracking-[0.3em] font-bold text-slate-400 dark:text-slate-500 flex items-center justify-between mb-8 relative z-10">
-                <span>Grade {tier.grade}</span>
-                <span className="w-8 h-px bg-slate-200 dark:bg-slate-800"></span>
-              </h3>
-              
-              <div className="flex-grow flex flex-col gap-4 relative z-10">
-                {tier.members.length > 0 ? (
-                  tier.members.map((member) => (
-                    <div key={member.id} className="text-slate-900 dark:text-slate-100 font-bold tracking-tight text-lg uppercase flex items-center gap-3">
-                       <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
-                       <span className="hover:text-blue-600 dark:hover:text-blue-400 cursor-default transition-colors">{member.name}</span>
+              <div className="relative z-10">
+                <h3 className="text-[10px] uppercase tracking-[0.3em] font-bold text-blue-400/80 mb-8 flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
+                  Leadership
+                </h3>
+                <div className="space-y-8">
+                  <div className="group/leader cursor-default">
+                    <div className="flex items-center gap-2 text-slate-400 mb-2 group-hover/leader:text-blue-400 transition-colors">
+                      <Crown className="w-4 h-4" />
+                      <span className="text-xs uppercase tracking-wider font-semibold">Founder</span>
                     </div>
-                  ))
-                ) : (
-                  <div className="text-slate-400 dark:text-slate-500 italic text-sm mt-2 flex items-center gap-3">
-                    <span className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-700"></span>
-                    <span>None</span>
+                    <div className="text-2xl lg:text-3xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400 group-hover/leader:to-white transition-colors">{founders.find(m => m.grade === 'Founder')?.name || 'Tuijbialnajah'}</div>
                   </div>
-                )}
+                  <div className="group/leader cursor-default">
+                    <div className="flex items-center gap-2 text-slate-400 mb-2 group-hover/leader:text-blue-400 transition-colors">
+                      <Star className="w-4 h-4" />
+                      <span className="text-xs uppercase tracking-wider font-semibold">Co-Founder</span>
+                    </div>
+                    <div className="text-2xl lg:text-3xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400 group-hover/leader:to-white transition-colors">{founders.find(m => m.grade === 'Co.Founder')?.name || '𝙱𝙹𝙴 ~ Vegeta'}</div>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-12 text-xs text-slate-500 font-mono tracking-widest relative z-10 flex justify-between items-center">
+                <span>EST. 2026 // BJE</span>
+                <div className="w-8 h-px bg-slate-700"></div>
               </div>
             </motion.div>
-          ))}
+
+            {/* Grade Tiers */}
+            {gridData.map((tier) => (
+              <motion.div variants={item} key={tier.grade} className="snap-center sm:snap-start shrink-0 w-[85vw] md:w-[350px] p-8 rounded-[32px] bg-gradient-to-b from-white to-slate-50/50 dark:from-slate-900 dark:to-slate-950 flex flex-col min-h-[300px] border border-slate-200/80 dark:border-slate-800 shadow-xl shadow-slate-200/50 dark:shadow-none relative overflow-hidden group hover:-translate-y-1 hover:shadow-2xl hover:shadow-slate-200/60 dark:hover:shadow-slate-900/50 hover:border-slate-300 dark:hover:border-slate-700 transition-all duration-300 ring-1 ring-black/[0.02] dark:ring-white/[0.02]">
+                <div className="absolute -right-6 -bottom-10 text-[180px] font-black pointer-events-none font-serif select-none leading-none group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-700 text-transparent [-webkit-text-stroke:2px_rgba(0,0,0,0.03)] dark:[-webkit-text-stroke:2px_rgba(255,255,255,0.03)] opacity-100">
+                  {tier.grade}
+                </div>
+                
+                <h3 className="text-[10px] uppercase tracking-[0.3em] font-bold text-slate-400 dark:text-slate-500 flex items-center justify-between mb-8 relative z-10">
+                  <span className="group-hover:text-slate-600 dark:group-hover:text-slate-300 transition-colors">Grade {tier.grade}</span>
+                  <span className="w-8 h-px bg-slate-200 dark:bg-slate-800 group-hover:w-16 transition-all duration-500"></span>
+                </h3>
+                
+                <div className="flex-grow flex flex-col gap-3 relative z-10">
+                  {tier.members.length > 0 ? (
+                    tier.members.map((member) => (
+                      <div key={member.id} className="text-slate-800 dark:text-slate-200 font-bold tracking-tight text-lg uppercase flex items-center gap-4 group/member p-2 -mx-2 rounded-2xl hover:bg-white dark:hover:bg-slate-800 hover:shadow-sm dark:hover:shadow-none hover:ring-1 hover:ring-slate-100 dark:hover:ring-slate-700 transition-all cursor-default">
+                         <div className="w-10 h-10 shrink-0 rounded-full bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex items-center justify-center text-sm text-blue-500 shadow-inner group-hover/member:scale-110 group-hover/member:bg-blue-50 dark:group-hover/member:bg-blue-900/20 transition-all duration-300">
+                            {member.name.charAt(0)}
+                         </div>
+                         <span className="group-hover/member:text-blue-600 dark:group-hover/member:text-blue-400 transition-colors w-full overflow-hidden text-ellipsis whitespace-nowrap">{member.name}</span>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-slate-400 dark:text-slate-500 italic text-sm mt-2 flex items-center gap-3 p-2 -mx-2 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+                      <span className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-700"></span>
+                      <span>No members yet</span>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            ))}
+          </div>
 
           {/* Join Request Block */}
-          <motion.div variants={item} className="lg:col-span-3 p-8 md:p-12 rounded-[32px] bg-white dark:bg-slate-900/50 border border-slate-200/50 dark:border-slate-800 relative xl:overflow-hidden group flex flex-col lg:flex-row gap-12 items-center">
+          <motion.div variants={item} className="mt-8 p-8 md:p-12 rounded-[32px] bg-white dark:bg-slate-900/50 border border-slate-200/50 dark:border-slate-800 relative xl:overflow-hidden group flex flex-col lg:flex-row gap-12 items-center">
             <div className="flex-1 w-full">
               <h3 className="text-[10px] uppercase tracking-[0.3em] font-bold text-blue-500 mb-6">Enlistment</h3>
               <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter text-slate-900 dark:text-white leading-none mb-6 text-balance">
@@ -199,29 +239,35 @@ export default function Home() {
             </form>
           </motion.div>
 
-          {/* Policy Block */}
-          <motion.div variants={item} className="lg:col-span-3 p-8 md:p-12 rounded-[32px] bg-slate-100 dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800 flex flex-col md:flex-row justify-between items-start md:items-center gap-8 relative overflow-hidden">
-            <div className="absolute top-0 right-0 p-8 text-slate-200 dark:text-slate-800 pointer-events-none flex gap-2 font-mono text-[10px] uppercase tracking-widest font-bold">
-              <span>SYS/01</span>
-              <span>•</span>
-              <span>SECURE</span>
-            </div>
-
-            <div className="max-w-xl relative z-10">
-               <h3 className="text-[10px] uppercase tracking-[0.3em] font-bold text-red-500 mb-6">Strict Policy</h3>
-               <p className="text-slate-800 dark:text-slate-200 font-medium leading-relaxed">
-                 We have a zero tolerance policy for malicious activity or harm. Any misuse of skills under any circumstance will result in immediate removal.
-               </p>
-            </div>
-            
-            <div className="text-3xl md:text-5xl font-black uppercase tracking-tighter text-slate-300 dark:text-slate-700 leading-none text-right relative z-10 text-balance">
-              We build minds.<br/>
-              <span className="text-slate-900 dark:text-white">Not threats.</span>
-            </div>
-          </motion.div>
-
         </motion.div>
       </main>
+
+      {/* Premium Footer */}
+      <footer className="w-full bg-black text-white py-16 px-6 md:px-12 border-t border-slate-900 mt-auto">
+        <div className="max-w-[1400px] w-full mx-auto flex flex-col md:flex-row justify-between items-center gap-12 text-center md:text-left">
+          <div className="flex flex-col items-center md:items-start tracking-tighter">
+            <span className="text-2xl font-black uppercase tracking-widest text-white">BJE</span>
+            <span className="text-xs text-slate-500 font-mono mt-2 tracking-widest">EST. 2026 // CLAN</span>
+          </div>
+          
+          <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-12 text-xs font-bold uppercase tracking-widest text-slate-400">
+            <a 
+              href="https://chat.whatsapp.com/DVbCiXwoWFIAG8tae8JmyE" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hover:text-white transition-colors flex items-center gap-2"
+            >
+              WhatsApp Community
+            </a>
+            <Link 
+              to="/terms" 
+              className="hover:text-white transition-colors"
+            >
+              Terms & Conditions
+            </Link>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

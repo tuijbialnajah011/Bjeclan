@@ -12,6 +12,7 @@ import { Navbar } from './components/layout/Navbar';
 const Home = lazy(() => import('./pages/Home'));
 const Members = lazy(() => import('./pages/Members'));
 const MemberDetail = lazy(() => import('./pages/MemberDetail'));
+const Terms = lazy(() => import('./pages/Terms'));
 
 // Loading fallback
 const PageLoader = () => (
@@ -34,6 +35,7 @@ export default function App() {
               <Route path="/" element={<Home />} />
               <Route path="/members" element={<Members />} />
               <Route path="/members/:id" element={<MemberDetail />} />
+              <Route path="/terms" element={<Terms />} />
             </Routes>
           </Suspense>
         </div>
