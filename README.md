@@ -1,20 +1,31 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# 𝙱𝙹𝙴 ~ Clan
 
-# Run and deploy your AI Studio app
+Powered by **𝙱𝙹𝙴 ~ Clan**.
 
-This contains everything you need to run your app locally.
+> *We are not merely a gathering of enthusiasts. We are an alliance — a brotherhood and sisterhood united under the banner of 𝙱𝙹𝙴 ~ Clan.*
 
-View your app in AI Studio: https://ai.studio/apps/7619c0c9-d56d-4a14-b80b-090a8855c24b
+## About The Project
 
-## Run Locally
+This is the official platform for the **𝙱𝙹𝙴 Clan**. A highly disciplined community focused on learning, evolution, and mutual growth. We believe in building minds, not threats.
 
-**Prerequisites:**  Node.js
+## 🚀 Features
 
+- **Modern UI/UX**: Designed with sleek aesthetics and fluid animations.
+- **Member Showcase**: A detailed portal to explore our leadership and members across different grades.
+- **Enlistment Gateway**: A structured way for candidates to submit their real skills and intent to join the clan.
+- **Strict Policies**: Transparency regarding our zero-tolerance policy against malicious activity.
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## 💻 Tech Stack
+
+- **React & TypeScript**
+- **Tailwind CSS** (for styling)
+- **Framer Motion** (for smooth animations)
+- **Lucide React** (icons)
+- **Vite** (build tool and dev server)
+
+## 🤝 Join the Community
+
+Interested in joining us? Follow the directions on our official platform or join our [WhatsApp Community](https://chat.whatsapp.com/DVbCiXwoWFIAG8tae8JmyE).
+
+---
+*© 2026 𝙱𝙹𝙴 ~ Clan. All rights reserved.*
